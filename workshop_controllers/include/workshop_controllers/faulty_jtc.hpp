@@ -15,42 +15,25 @@
 #ifndef WORKSHOP_CONTROLLERS__FAULTY_JTC_HPP_
 #define WORKSHOP_CONTROLLERS__FAULTY_JTC_HPP_
 
-#include <functional> // for std::reference_wrapper
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "control_msgs/msg/joint_trajectory_controller_state.hpp"
-#include "control_msgs/srv/query_trajectory_state.hpp"
-#include "control_toolbox/pid.hpp"
-#include "controller_interface/controller_interface.hpp"
 #include "example_interfaces/srv/set_bool.hpp"
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "joint_trajectory_controller/joint_trajectory_controller.hpp"
 #include "rclcpp/service.hpp"
-#include "trajectory_msgs/msg/joint_trajectory.hpp"
-#include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 
-using namespace std::chrono_literals; // NOLINT
+using namespace std::chrono_literals;  // NOLINT
 
-namespace workshop_controllers {
+namespace workshop_controllers
+{
 
-class FaultyJTC
-    : public joint_trajectory_controller::JointTrajectoryController {
+class FaultyJTC : public joint_trajectory_controller::JointTrajectoryController
+{
 public:
   FaultyJTC() = default;
   ~FaultyJTC() override = default;
 
-  controller_interface::InterfaceConfiguration
-  state_interface_configuration() const override;
+  controller_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State & state) override;
 
-  controller_interface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State &state) override;
-
-  controller_interface::return_type
-  update(const rclcpp::Time &time, const rclcpp::Duration &period) override;
-
-  CallbackReturn on_init() override;
+  controller_interface::return_type update(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
 private:
   bool should_fail_ = false;
@@ -58,6 +41,6 @@ private:
   rclcpp::Service<example_interfaces::srv::SetBool>::SharedPtr service_;
 };
 
-} // namespace workshop_controllers
+}  // namespace workshop_controllers
 
-#endif // WORKSHOP_CONTROLLERS__FAULTY_JTC_HPP_
+#endif  // WORKSHOP_CONTROLLERS__FAULTY_JTC_HPP_

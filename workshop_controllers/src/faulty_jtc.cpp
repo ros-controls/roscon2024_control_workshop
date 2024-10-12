@@ -14,35 +14,61 @@
 
 #include "workshop_controllers/faulty_jtc.hpp"
 
-namespace workshop_controllers {
+// Changed services history QoS to keep all so we don't lose any client service
+// calls \note The versions conditioning is added here to support the
+// source-compatibility with Humble
+#if RCLCPP_VERSION_MAJOR >= 17
+rclcpp::QoS qos_services =
+  rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_ALL, 1))
+    .reliable()
+    .durability_volatile();
+#else
+static const rmw_qos_profile_t qos_services = {
+  RMW_QOS_POLICY_HISTORY_KEEP_ALL,
+  1,  // message queue depth
+  RMW_QOS_POLICY_RELIABILITY_RELIABLE,
+  RMW_QOS_POLICY_DURABILITY_VOLATILE,
+  RMW_QOS_DEADLINE_DEFAULT,
+  RMW_QOS_LIFESPAN_DEFAULT,
+  RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT,
+  RMW_QOS_LIVELINESS_LEASE_DURATION_DEFAULT,
+  false};
+#endif
 
-controller_interface::CallbackReturn FaultyJTC::on_init() {
-  return JointTrajectoryController::on_init();
+namespace workshop_controllers
+{
+
+controller_interface::CallbackReturn FaultyJTC::on_configure(const rclcpp_lifecycle::State & state)
+{
+  auto set_fault_callback =
+    [&](
+      const std::shared_ptr<example_interfaces::srv::SetBool::Request> request,
+      std::shared_ptr<example_interfaces::srv::SetBool::Response> response)
+  {
+    RCLCPP_INFO(
+      get_node()->get_logger(), "Setting this JTC fail in the update(): %s",
+      request->data ? "true" : "false");
+
+    should_fail_ = request->data;
+    response->success = true;
+  };
+
+  service_ = get_node()->create_service<example_interfaces::srv::SetBool>(
+    "~/set_fault", set_fault_callback, qos_services);
+  return JointTrajectoryController::on_configure(state);
 }
 
-controller_interface::InterfaceConfiguration
-FaultyJTC::state_interface_configuration() const {
-  controller_interface::InterfaceConfiguration conf;
-  conf = JointTrajectoryController::state_interface_configuration();
-  return conf;
-}
-
-controller_interface::CallbackReturn
-FaultyJTC::on_activate(const rclcpp_lifecycle::State &state) {
-  return JointTrajectoryController::on_activate(state);
-}
-
-controller_interface::return_type
-FaultyJTC::update(const rclcpp::Time &time, const rclcpp::Duration &period) {
-  if (should_fail_) {
+controller_interface::return_type FaultyJTC::update(
+  const rclcpp::Time & time, const rclcpp::Duration & period)
+{
+  if (should_fail_)
+  {
     return controller_interface::return_type::ERROR;
   }
-
   return JointTrajectoryController::update(time, period);
 }
 
-} // namespace workshop_controllers
+}  // namespace workshop_controllers
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(workshop_controllers::FaultyJTC,
-                       controller_interface::ControllerInterface)
+PLUGINLIB_EXPORT_CLASS(workshop_controllers::FaultyJTC, controller_interface::ControllerInterface)
