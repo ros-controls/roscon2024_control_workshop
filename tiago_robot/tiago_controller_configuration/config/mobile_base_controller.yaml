@@ -1,0 +1,3 @@
+mobile_base_controller:
+  ros__parameters:
+    type: diff_drive_controller/DiffDriveController

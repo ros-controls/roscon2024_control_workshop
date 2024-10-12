@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tiago_bringup</name>
+  <version>4.0.9</version>
+  <description>Launch files to upload the robot description and start the controllers</description>
+  <maintainer email="jordi.pages@pal-robotics.com">Jordi Pages</maintainer>
+  <maintainer email="jordan.palacios@pal-robotics.com">Jordan Palacios</maintainer>
+  <maintainer email="noel.jimenez@pal-robotics.com">Noel Jimenez</maintainer>
+  <author email="bence.magyar@pal-robotics.com">Bence Magyar</author>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>joy_teleop</exec_depend>
+  <exec_depend>launch_pal</exec_depend>
+  <exec_depend>play_motion2</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>teleop_tools_msgs</exec_depend>
+  <exec_depend>tiago_controller_configuration</exec_depend>
+  <exec_depend>tiago_description</exec_depend>
+  <exec_depend>twist_mux</exec_depend>
+<!--  <exec_depend>twist_mux_msgs</exec_depend>-->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

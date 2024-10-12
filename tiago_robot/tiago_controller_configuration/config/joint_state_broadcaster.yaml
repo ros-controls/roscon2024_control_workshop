@@ -1,0 +1,17 @@
+joint_state_broadcaster:
+  ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
+    publish_rate: 50.0
+    extra_joints: 
+      - 'caster_back_left_1_joint'
+      - 'caster_back_left_2_joint'
+      - 'caster_front_left_1_joint'
+      - 'caster_front_left_2_joint'
+      - 'caster_back_right_1_joint'
+      - 'caster_back_right_2_joint'
+      - 'caster_front_right_1_joint'
+      - 'caster_front_right_2_joint'
+      - 'suspension_left_joint'
+      - 'suspension_right_joint'
+
+

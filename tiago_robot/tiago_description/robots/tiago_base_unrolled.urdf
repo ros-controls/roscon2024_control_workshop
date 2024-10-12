@@ -1,0 +1,1081 @@
+<?xml version="1.0"?>
+<!-- =================================================================================== -->
+<!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
+<!-- =================================================================================== -->
+<!-- \n  Copyright (c) 2022 PAL Robotics S.L. All rights reserved.\n\n  Licensed under the Apache License, Version 2.0 (the "License");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n      http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an "AS IS" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n -->
+<robot name="tiago">
+	<material name="Hey5DarkGrey">
+		<color rgba="0.1 0.1 0.1 1.0"/>
+	</material>
+	<gazebo>
+		<plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+			<!-- in the future move this param file somewhere else -->
+			<!-- <parameters>$(find tiago_controller_configuration)/config/gazebo_controller_manager_cfg.yaml</parameters> -->
+			<parameters>/opt/ros/humble/share/tiago_controller_configuration/config/gazebo_controller_manager_cfg.yaml</parameters>
+			<!-- Do something about multirobot -->
+		</plugin>
+		<plugin filename="libgazebo_ros_p3d.so" name="gazebo_ros_p3d">
+			<body_name>base_footprint</body_name>
+			<always_on>true</always_on>
+			<update_rate>100.0</update_rate>
+			<ros>
+				<remapping>odom:=ground_truth_odom</remapping>
+			</ros>
+		</plugin>
+	</gazebo>
+	<gazebo>
+		<!--- backwards compatibility, used to be gazebo_world_odometry pal plugin-->
+		<plugin filename="libgazebo_ros_p3d.so" name="gazebo_ros_odometry">
+			<body_name>base_footprint</body_name>
+			<always_on>true</always_on>
+			<update_rate>1000.0</update_rate>
+			<ros>
+				<remapping>odom:=floating_base_pose_simulated</remapping>
+			</ros>
+		</plugin>
+	</gazebo>
+	<gazebo reference="base_imu_link">
+		<sensor name="imu_sensor" type="imu">
+			<always_on>1</always_on>
+			<update_rate>10.0</update_rate>
+			<imu>
+				<noise>
+					<type>gaussian</type>
+					<rate>
+						<mean>0.0</mean>
+						<stddev>2e-4</stddev>
+						<bias_mean>0.0000075</bias_mean>
+						<bias_stddev>0.0000008</bias_stddev>
+					</rate>
+					<accel>
+						<mean>0.0</mean>
+						<stddev>1.7e-2</stddev>
+						<bias_mean>0.1</bias_mean>
+						<bias_stddev>0.001</bias_stddev>
+					</accel>
+				</noise>
+			</imu>
+			<plugin filename="libgazebo_ros_imu_sensor.so" name="base_imu">
+				<ros>
+					<!-- publish to /imu/data -->
+					<remapping>~/out:=base_imu</remapping>
+				</ros>
+			</plugin>
+		</sensor>
+	</gazebo>
+	<ros2_control name="ros2_control_tiago_system" type="system">
+		<hardware>
+			<plugin>gazebo_ros2_control/GazeboSystem</plugin>
+		</hardware>
+		<joint name="wheel_right_joint">
+			<command_interface name="velocity">
+				<param name="min">-1</param>
+				<param name="max">1</param>
+			</command_interface>
+			<state_interface name="position"/>
+		</joint>
+		<transmission name="wheel_right_trans">
+			<plugin>transmission_interface/SimpleTransmission</plugin>
+			<actuator name="wheel_right_actuator" role="actuator1"/>
+			<joint name="wheel_right_joint" role="joint1">
+				<mechanical_reduction>1.0</mechanical_reduction>
+			</joint>
+		</transmission>
+		<joint name="wheel_left_joint">
+			<command_interface name="velocity">
+				<param name="min">-1</param>
+				<param name="max">1</param>
+			</command_interface>
+			<state_interface name="position"/>
+		</joint>
+		<transmission name="wheel_left_trans">
+			<plugin>transmission_interface/SimpleTransmission</plugin>
+			<actuator name="wheel_left_actuator" role="actuator1"/>
+			<joint name="wheel_left_joint" role="joint1">
+				<mechanical_reduction>1.0</mechanical_reduction>
+			</joint>
+		</transmission>
+		<sensor name="base_imu_sensor">
+			<state_interface name="orientation.x"/>
+			<state_interface name="orientation.y"/>
+			<state_interface name="orientation.z"/>
+			<state_interface name="orientation.w"/>
+			<state_interface name="angular_velocity.x"/>
+			<state_interface name="angular_velocity.y"/>
+			<state_interface name="angular_velocity.z"/>
+			<state_interface name="linear_acceleration.x"/>
+			<state_interface name="linear_acceleration.y"/>
+			<state_interface name="linear_acceleration.z"/>
+		</sensor>
+	</ros2_control>
+	<material name="Blue">
+		<color rgba="0.0 0.0 0.8 1.0"/>
+	</material>
+	<material name="Green">
+		<color rgba="0.0 0.8 0.0 1.0"/>
+	</material>
+	<material name="Grey">
+		<color rgba="0.7 0.7 0.7 1.0"/>
+	</material>
+	<material name="LightGrey">
+		<color rgba="0.9 0.9 0.9 1.0"/>
+	</material>
+	<material name="DarkGrey">
+		<color rgba="0.1 0.1 0.1 1.0"/>
+	</material>
+	<material name="Red">
+		<color rgba="0.8 0.0 0.0 1.0"/>
+	</material>
+	<material name="White">
+		<color rgba="1.0 1.0 1.0 1.0"/>
+	</material>
+	<material name="Yellow">
+		<color rgba="0.96 0.88 0.14 1.0"/>
+	</material>
+	<material name="Orange">
+		<color rgba="1.0 0.69 0.0 1.0"/>
+	</material>
+	<material name="Black">
+		<color rgba="0.0 0.0 0.0 1.0"/>
+	</material>
+	<material name="FlatBlack">
+		<color rgba="0.09 0.09 0.09 1.0"/>
+	</material>
+	<link name="base_laser_link" type="laser">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.02559000000 -0.00056000000 -0.05732000000"/>
+			<mass value="0.28922000000"/>
+			<inertia ixx="0.00002628919" ixy="0.00000024298" ixz="-0.00000368129" iyy="0.00003374542" iyz="-0.00000001330" izz="0.00005832599"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/sensors/sick_tim551.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+	</link>
+	<joint name="base_laser_joint" type="fixed">
+		<axis xyz="0 1 0"/>
+		<origin rpy="0 0 0" xyz="0.202 0.0 -0.004"/>
+		<parent link="base_link"/>
+		<child link="base_laser_link"/>
+	</joint>
+	<gazebo reference="base_laser_link">
+		<sensor name="base_laser" type="ray">
+			<pose>0 0 0 0 0 0</pose>
+			<update_rate>10</update_rate>
+			<visualize>true</visualize>
+			<ray>
+				<scan>
+					<horizontal>
+						<!-- 818 (270/0.33) steps in 270deg fov -->
+						<samples>666.5185185185185</samples>
+						<resolution>1</resolution>
+						<!-- not the sensor resolution; just 1 -->
+						<min_angle>-1.9198621771937625</min_angle>
+						<max_angle>1.9198621771937625</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>0.05</min>
+					<max>25.0</max>
+					<resolution>0.001</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.06</stddev>
+				</noise>
+			</ray>
+			<plugin filename="libgazebo_ros_ray_sensor.so" name="bytes_laserscan">
+				<ros>
+					<remapping>~/out:=scan_raw</remapping>
+				</ros>
+				<output_type>sensor_msgs/LaserScan</output_type>
+				<frame_name>base_laser_link</frame_name>
+			</plugin>
+		</sensor>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<link name="base_sonar_03_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.001"/>
+			<inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/sensors/srf05.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+	</link>
+	<joint name="base_sonar_03_joint" type="fixed">
+		<origin rpy="0 0 2.356194490192345" xyz="-0.183 0.183 0.173"/>
+		<axis xyz="0 0 1"/>
+		<parent link="base_link"/>
+		<child link="base_sonar_03_link"/>
+	</joint>
+	<gazebo reference="base_sonar_03_link">
+		<sensor name="base_sonar_03" type="ray">
+			<pose>0 0 0 0 0 0</pose>
+			<update_rate>5</update_rate>
+			<visualize>false</visualize>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</horizontal>
+					<vertical>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</vertical>
+				</scan>
+				<range>
+					<min>0.02</min>
+					<max>1.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.005</stddev>
+				</noise>
+			</ray>
+			<plugin filename="libgazebo_ros_ray_sensor.so" name="base_sonar_03_gazebo_ros_range">
+				<ros>
+					<namespace>distance</namespace>
+					<remapping>~/out:=sonar_base</remapping>
+				</ros>
+				<output_type>sensor_msgs/Range</output_type>
+				<radiation_type>ultrasound</radiation_type>
+				<frame_name>base_sonar_03_link</frame_name>
+			</plugin>
+		</sensor>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<link name="base_sonar_02_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.001"/>
+			<inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/sensors/srf05.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+	</link>
+	<joint name="base_sonar_02_joint" type="fixed">
+		<origin rpy="0 0 3.141592653589793" xyz="-0.259 0.0 0.173"/>
+		<axis xyz="0 0 1"/>
+		<parent link="base_link"/>
+		<child link="base_sonar_02_link"/>
+	</joint>
+	<gazebo reference="base_sonar_02_link">
+		<sensor name="base_sonar_02" type="ray">
+			<pose>0 0 0 0 0 0</pose>
+			<update_rate>5</update_rate>
+			<visualize>false</visualize>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</horizontal>
+					<vertical>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</vertical>
+				</scan>
+				<range>
+					<min>0.02</min>
+					<max>1.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.005</stddev>
+				</noise>
+			</ray>
+			<plugin filename="libgazebo_ros_ray_sensor.so" name="base_sonar_02_gazebo_ros_range">
+				<ros>
+					<namespace>distance</namespace>
+					<remapping>~/out:=sonar_base</remapping>
+				</ros>
+				<output_type>sensor_msgs/Range</output_type>
+				<radiation_type>ultrasound</radiation_type>
+				<frame_name>base_sonar_02_link</frame_name>
+			</plugin>
+		</sensor>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<link name="base_sonar_01_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.001"/>
+			<inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/sensors/srf05.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+	</link>
+	<joint name="base_sonar_01_joint" type="fixed">
+		<origin rpy="0 0 3.9269908169872414" xyz="-0.183 -0.183 0.173"/>
+		<axis xyz="0 0 1"/>
+		<parent link="base_link"/>
+		<child link="base_sonar_01_link"/>
+	</joint>
+	<gazebo reference="base_sonar_01_link">
+		<sensor name="base_sonar_01" type="ray">
+			<pose>0 0 0 0 0 0</pose>
+			<update_rate>5</update_rate>
+			<visualize>false</visualize>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</horizontal>
+					<vertical>
+						<samples>5</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.25</min_angle>
+						<max_angle>0.25</max_angle>
+					</vertical>
+				</scan>
+				<range>
+					<min>0.02</min>
+					<max>1.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.005</stddev>
+				</noise>
+			</ray>
+			<plugin filename="libgazebo_ros_ray_sensor.so" name="base_sonar_01_gazebo_ros_range">
+				<ros>
+					<namespace>distance</namespace>
+					<remapping>~/out:=sonar_base</remapping>
+				</ros>
+				<output_type>sensor_msgs/Range</output_type>
+				<radiation_type>ultrasound</radiation_type>
+				<frame_name>base_sonar_01_link</frame_name>
+			</plugin>
+		</sensor>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<link name="base_mic_front_left_link"/>
+	<joint name="base_mic_front_left_joint" type="fixed">
+		<origin rpy="0 0 0" xyz="0.23182 0.03902 0.195"/>
+		<child link="base_mic_front_left_link"/>
+		<parent link="base_link"/>
+	</joint>
+	<link name="base_mic_front_right_link"/>
+	<joint name="base_mic_front_right_joint" type="fixed">
+		<origin rpy="0 0 0" xyz="0.23182 -0.03902 0.195"/>
+		<child link="base_mic_front_right_link"/>
+		<parent link="base_link"/>
+	</joint>
+	<link name="base_mic_back_left_link"/>
+	<joint name="base_mic_back_left_joint" type="fixed">
+		<origin rpy="0 0 0" xyz="-0.1082 -0.0599 0.195"/>
+		<child link="base_mic_back_left_link"/>
+		<parent link="base_link"/>
+	</joint>
+	<link name="base_mic_back_right_link"/>
+	<joint name="base_mic_back_right_joint" type="fixed">
+		<origin rpy="0 0 0" xyz="-0.1082 -0.13789 0.195"/>
+		<child link="base_mic_back_right_link"/>
+		<parent link="base_link"/>
+	</joint>
+	<!-- Base -->
+	<link name="base_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.00000106 0.00000109 0.0000387"/>
+			<mass value="28.26649"/>
+			<inertia ixx="0.465408937" ixy="0.002160024" ixz="-0.001760255" iyy="0.483193291" iyz="-0.000655952" izz="0.550939703"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/base/base.stl"/>
+			</geometry>
+			<material name="White"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/base/high_resolution/base_collision.stl"/>
+			</geometry>
+			<material name="White"/>
+		</collision>
+	</link>
+	<gazebo reference="base_link">
+		<material>Gazebo/White</material>
+	</gazebo>
+	<!-- Base footprint -->
+	<link name="base_footprint"/>
+	<joint name="base_footprint_joint" type="fixed">
+		<origin rpy="0 0 0" xyz="0 0 0.0985"/>
+		<child link="base_link"/>
+		<parent link="base_footprint"/>
+	</joint>
+	<!-- gazebo parameters are given here for base_link thru base_footprint -->
+	<gazebo reference="base_footprint">
+		<kp>100000000.0</kp>
+		<kd>10.0</kd>
+		<mu1>0.1</mu1>
+		<mu2>0.1</mu2>
+		<fdir1>1 0 0</fdir1>
+		<maxVel>10.0</maxVel>
+		<minDepth>0.0005</minDepth>
+		<laserRetro>0</laserRetro>
+	</gazebo>
+	<link name="base_cover_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0.22414000000 0.00002000000 0.04681000000"/>
+			<mass value="0.25821000000"/>
+			<inertia ixx="0.00023719188" ixy="0.00000006119" ixz="-0.00000011799" iyy="0.00028335052" iyz="0.00000000774" izz="0.00038497063"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/base/base_ring.stl"/>
+			</geometry>
+			<material name="Orange"/>
+		</visual>
+	</link>
+	<joint name="cover_joint" type="fixed">
+		<parent link="base_footprint"/>
+		<child link="base_cover_link"/>
+		<origin rpy="0 0 0" xyz="0 0 0.13"/>
+	</joint>
+	<gazebo reference="base_cover_link">
+		<material>Gazebo/Orange</material>
+	</gazebo>
+	<link name="base_antenna_left_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.000001"/>
+			<inertia ixx="0.00000002371" ixy="0.00000006119" ixz="0.00000001179" iyy="0.00000002833" iyz="0.00000000774" izz="0.00000003849"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/objects/antenna.stl"/>
+			</geometry>
+			<material name="Black"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0.085"/>
+			<geometry>
+				<cylinder length="0.17" radius="0.005"/>
+			</geometry>
+			<material name="Black"/>
+		</collision>
+	</link>
+	<gazebo reference="base_antenna_left_link">
+		<material>Gazebo/Black</material>
+	</gazebo>
+	<joint name="base_antenna_left_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="base_antenna_left_link"/>
+		<origin rpy="0 0 0" xyz="-0.201 0.1062 0.195"/>
+	</joint>
+	<link name="base_antenna_right_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.000001"/>
+			<inertia ixx="0.00000002371" ixy="0.00000006119" ixz="0.00000001179" iyy="0.00000002833" iyz="0.00000000774" izz="0.00000003849"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/objects/antenna.stl"/>
+			</geometry>
+			<material name="Black"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0.085"/>
+			<geometry>
+				<cylinder length="0.17" radius="0.005"/>
+			</geometry>
+			<material name="Black"/>
+		</collision>
+	</link>
+	<gazebo reference="base_antenna_right_link">
+		<material>Gazebo/Black</material>
+	</gazebo>
+	<joint name="base_antenna_right_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="base_antenna_right_link"/>
+		<origin rpy="0 0 0" xyz="-0.201 -0.1062 0.195"/>
+	</joint>
+	<link name="base_imu_link">
+		<inertial>
+			<mass value="0.01"/>
+			<origin xyz="0 0 0"/>
+			<inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+		</inertial>
+		<!--visual>\n        <origin rpy="0 0 0" xyz="0 0 0"/>\n        <geometry>\n          <box size="0.01 0.01 0.01"/>\n        </geometry>\n      </visual-->
+	</link>
+	<joint name="base_imu_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="base_imu_link"/>
+		<origin rpy="0 0 -1.5707963267948966" xyz="0.10171 0 0.11282"/>
+	</joint>
+	<gazebo reference="base_imu_link">
+		<sensor name="base_imu_sensor" type="imu">
+			<always_on>1</always_on>
+			<update_rate>100.0</update_rate>
+			<imu>
+				<noise>
+					<type>gaussian</type>
+					<rate>
+						<mean>0.0</mean>
+						<stddev>2e-4</stddev>
+						<bias_mean>0.0000075</bias_mean>
+						<bias_stddev>0.0000008</bias_stddev>
+					</rate>
+					<accel>
+						<mean>0.0</mean>
+						<stddev>1.7e-2</stddev>
+						<bias_mean>0.1</bias_mean>
+						<bias_stddev>0.001</bias_stddev>
+					</accel>
+				</noise>
+			</imu>
+		</sensor>
+	</gazebo>
+	<link name="wheel_right_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 -0.00207"/>
+			<mass value="1.82362"/>
+			<inertia ixx="0.00499743171" ixy="4.464e-08" ixz="-0.00000002245" iyy="0.00499741733" iyz="-1.64e-09" izz="0.00839239692"/>
+		</inertial>
+		<visual>
+			<origin rpy="-0.0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/wheel.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.0985"/>
+				<!-- length="${width}"/>-->
+			</geometry>
+		</collision>
+	</link>
+	<link name="suspension_right_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 -0.02"/>
+			<mass value="10"/>
+			<inertia ixx="1.0" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="1.0"/>
+		</inertial>
+		<kinematic>0</kinematic>
+		<gravity>1</gravity>
+	</link>
+	<joint name="suspension_right_joint" type="prismatic">
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="100.0" lower="-0.005" upper="0.005" velocity="1.0"/>
+		<child link="suspension_right_link"/>
+		<parent link="base_link"/>
+		<calibration rising="0.0"/>
+		<dynamics damping="100"/>
+		<safety_controller k_position="0" k_velocity="10" soft_lower_limit="-0.005" soft_upper_limit="0.005"/>
+	</joint>
+	<joint name="wheel_right_joint" type="continuous">
+		<parent link="suspension_right_link"/>
+		<child link="wheel_right_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="0 -0.2022 0.0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" velocity="10.152284263959391"/>
+		<dynamics damping="1.0" friction="2.0"/>
+	</joint>
+	<!-- Contact model for the wheel surface -->
+	<gazebo reference="wheel_right_link">
+		<kp>1000000.0</kp>
+		<kd>100.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.002</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="wheel_{side}_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>1</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<link name="wheel_left_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0.00207"/>
+			<mass value="1.82362"/>
+			<inertia ixx="0.00499743171" ixy="-4.464e-08" ixz="-0.00000002245" iyy="0.00499741733" iyz="1.64e-09" izz="0.00839239692"/>
+		</inertial>
+		<visual>
+			<origin rpy="-3.141592653589793 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/wheel.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.0985"/>
+				<!-- length="${width}"/>-->
+			</geometry>
+		</collision>
+	</link>
+	<link name="suspension_left_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 -0.02"/>
+			<mass value="10"/>
+			<inertia ixx="1.0" ixy="0" ixz="0" iyy="1.0" iyz="0" izz="1.0"/>
+		</inertial>
+		<kinematic>0</kinematic>
+		<gravity>1</gravity>
+	</link>
+	<joint name="suspension_left_joint" type="prismatic">
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="100.0" lower="-0.005" upper="0.005" velocity="1.0"/>
+		<child link="suspension_left_link"/>
+		<parent link="base_link"/>
+		<calibration rising="0.0"/>
+		<dynamics damping="100"/>
+		<safety_controller k_position="0" k_velocity="10" soft_lower_limit="-0.005" soft_upper_limit="0.005"/>
+	</joint>
+	<joint name="wheel_left_joint" type="continuous">
+		<parent link="suspension_left_link"/>
+		<child link="wheel_left_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="0 0.2022 0.0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" velocity="10.152284263959391"/>
+		<dynamics damping="1.0" friction="2.0"/>
+	</joint>
+	<!-- Contact model for the wheel surface -->
+	<gazebo reference="wheel_left_link">
+		<kp>1000000.0</kp>
+		<kd>100.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.002</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="wheel_{side}_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>1</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<link name="caster_front_right_1_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
+			<mass value="0.05144761"/>
+			<inertia ixx="0.00001513" ixy="-0.00000003" ixz="0.00000267" iyy="0.00001309" iyz="-0.00000005" izz="0.00001198"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_1.stl"/>
+			</geometry>
+			<material name="Grey"/>
+		</visual>
+		<!--collision>\n        <origin xyz="0 0 0" rpy="0 0 0"/>\n        <geometry>\n          <cylinder radius="${radius}" length="${width}"/>\n        </geometry>\n      </collision-->
+	</link>
+	<link name="caster_front_right_2_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.08855784"/>
+			<inertia ixx="0.00001075" ixy="0" ixz="0" iyy="0.00001541" iyz="0" izz="0.00001075"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_2.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.025"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="caster_front_right_1_joint" type="continuous">
+		<parent link="base_link"/>
+		<child link="caster_front_right_1_link"/>
+		<origin rpy="0 0 0" xyz="0.1695 -0.102 -0.0335"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<joint name="caster_front_right_2_joint" type="continuous">
+		<parent link="caster_front_right_1_link"/>
+		<child link="caster_front_right_2_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="-0.016 0.0000 -0.040"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<!-- Contact model for the caster wheel surface -->
+	<gazebo reference="caster_front_right_1_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_front_right_2_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_{side}_1_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<gazebo reference="caster_{side}_2_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<link name="caster_front_left_1_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
+			<mass value="0.05144761"/>
+			<inertia ixx="0.00001513" ixy="-0.00000003" ixz="0.00000267" iyy="0.00001309" iyz="-0.00000005" izz="0.00001198"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_1.stl"/>
+			</geometry>
+			<material name="Grey"/>
+		</visual>
+		<!--collision>\n        <origin xyz="0 0 0" rpy="0 0 0"/>\n        <geometry>\n          <cylinder radius="${radius}" length="${width}"/>\n        </geometry>\n      </collision-->
+	</link>
+	<link name="caster_front_left_2_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.08855784"/>
+			<inertia ixx="0.00001075" ixy="0" ixz="0" iyy="0.00001541" iyz="0" izz="0.00001075"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_2.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.025"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="caster_front_left_1_joint" type="continuous">
+		<parent link="base_link"/>
+		<child link="caster_front_left_1_link"/>
+		<origin rpy="0 0 0" xyz="0.1695 0.102 -0.0335"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<joint name="caster_front_left_2_joint" type="continuous">
+		<parent link="caster_front_left_1_link"/>
+		<child link="caster_front_left_2_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="-0.016 0.0000 -0.040"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<!-- Contact model for the caster wheel surface -->
+	<gazebo reference="caster_front_left_1_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_front_left_2_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_{side}_1_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<gazebo reference="caster_{side}_2_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<link name="caster_back_right_1_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
+			<mass value="0.05144761"/>
+			<inertia ixx="0.00001513" ixy="-0.00000003" ixz="0.00000267" iyy="0.00001309" iyz="-0.00000005" izz="0.00001198"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_1.stl"/>
+			</geometry>
+			<material name="Grey"/>
+		</visual>
+		<!--collision>\n        <origin xyz="0 0 0" rpy="0 0 0"/>\n        <geometry>\n          <cylinder radius="${radius}" length="${width}"/>\n        </geometry>\n      </collision-->
+	</link>
+	<link name="caster_back_right_2_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.08855784"/>
+			<inertia ixx="0.00001075" ixy="0" ixz="0" iyy="0.00001541" iyz="0" izz="0.00001075"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_2.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.025"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="caster_back_right_1_joint" type="continuous">
+		<parent link="base_link"/>
+		<child link="caster_back_right_1_link"/>
+		<origin rpy="0 0 0" xyz="-0.17350000000000002 -0.102 -0.0335"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<joint name="caster_back_right_2_joint" type="continuous">
+		<parent link="caster_back_right_1_link"/>
+		<child link="caster_back_right_2_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="-0.016 0.0000 -0.040"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<!-- Contact model for the caster wheel surface -->
+	<gazebo reference="caster_back_right_1_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_back_right_2_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_{side}_1_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<gazebo reference="caster_{side}_2_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<link name="caster_back_left_1_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="-0.00634599 0.00005347 -0.02037519"/>
+			<mass value="0.05144761"/>
+			<inertia ixx="0.00001513" ixy="-0.00000003" ixz="0.00000267" iyy="0.00001309" iyz="-0.00000005" izz="0.00001198"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_1.stl"/>
+			</geometry>
+			<material name="Grey"/>
+		</visual>
+		<!--collision>\n        <origin xyz="0 0 0" rpy="0 0 0"/>\n        <geometry>\n          <cylinder radius="${radius}" length="${width}"/>\n        </geometry>\n      </collision-->
+	</link>
+	<link name="caster_back_left_2_link">
+		<inertial>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<mass value="0.08855784"/>
+			<inertia ixx="0.00001075" ixy="0" ixz="0" iyy="0.00001541" iyz="0" izz="0.00001075"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<mesh filename="package://pmb2_description/meshes/wheels/caster_2.stl"/>
+			</geometry>
+			<material name="DarkGrey"/>
+		</visual>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<sphere radius="0.025"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="caster_back_left_1_joint" type="continuous">
+		<parent link="base_link"/>
+		<child link="caster_back_left_1_link"/>
+		<origin rpy="0 0 0" xyz="-0.17350000000000002 0.102 -0.0335"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<joint name="caster_back_left_2_joint" type="continuous">
+		<parent link="caster_back_left_1_link"/>
+		<child link="caster_back_left_2_link"/>
+		<origin rpy="-1.5707963267948966 0 0" xyz="-0.016 0.0000 -0.040"/>
+		<axis xyz="0 0 1"/>
+		<dynamics damping="0.015" friction="0.0"/>
+	</joint>
+	<!-- Contact model for the caster wheel surface -->
+	<gazebo reference="caster_back_left_1_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_back_left_2_link">
+		<kp>1000000.0</kp>
+		<kd>10000.0</kd>
+		<friction>
+			<ode>
+				<mu>1.0</mu>
+				<mu2>1.0</mu2>
+			</ode>
+		</friction>
+		<!--<fdir1>1 0 0</fdir1>-->
+		<max_vel>1.0</max_vel>
+		<min_depth>0.005</min_depth>
+		<material>Gazebo/DarkGrey</material>
+	</gazebo>
+	<gazebo reference="caster_{side}_1_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+	<gazebo reference="caster_{side}_2_joint">
+		<physics>
+			<ode>
+				<implicit_spring_damper>0</implicit_spring_damper>
+			</ode>
+		</physics>
+	</gazebo>
+</robot>
