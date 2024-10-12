@@ -1,0 +1,7 @@
+<library path="workshop_controllers">
+  <class name="workshop_controllers/workshop_controllers::FaultyJTC" type="workshop_controllers::workshop_controllers::FaultyJTC" base_class_type="controller_interface::ControllerInterface">
+  <description>
+    JTC with a fault injection service
+  </description>
+  </class>
+</library>

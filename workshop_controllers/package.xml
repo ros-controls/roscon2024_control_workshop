@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>workshop_controllers</name>
+  <version>0.0.0</version>
+  <description>Controllers for the ROSCon 2024 workshop</description>
+  <maintainer email="bence.magyar.robotics@gmail.com">Bence Magyar</maintainer>
+  <maintainer email="denis.stogl@stoglrobotics.de">Dr. Denis Štogl</maintainer>
+  <maintainer email="christoph.froehlich@ait.ac.at">Christoph Froehlich</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>backward_ros</depend>
+  <depend>control_msgs</depend>
+  <depend>controller_interface</depend>
+  <depend>example_interfaces</depend>
+  <depend>hardware_interface</depend>
+  <depend>joint_trajectory_controller</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>realtime_tools</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>urdf</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
