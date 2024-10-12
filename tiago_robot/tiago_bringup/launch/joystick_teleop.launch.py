@@ -23,50 +23,55 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    pkg_dir = get_package_share_directory('tiago_bringup')
+    pkg_dir = get_package_share_directory("tiago_bringup")
 
     # @TODO load the proper joy_telop config file according to tiago params
-    joy_teleop_path = os.path.join(
-        pkg_dir, 'config', 'joy_teleop',
-        'joy_teleop_pal-gripper.yaml')
+    joy_teleop_path = os.path.join(pkg_dir, "config", "joy_teleop", "joy_teleop_pal-gripper.yaml")
 
     declare_cmd_vel = DeclareLaunchArgument(
-        'cmd_vel', default_value='input_joy/cmd_vel',
-        description='Joystick cmd_vel topic')
+        "cmd_vel", default_value="input_joy/cmd_vel", description="Joystick cmd_vel topic"
+    )
 
     declare_teleop_config = DeclareLaunchArgument(
-        'teleop_config', default_value=joy_teleop_path,
-        description='Joystick teleop configuration file')
+        "teleop_config",
+        default_value=joy_teleop_path,
+        description="Joystick teleop configuration file",
+    )
 
     joy_teleop_node = Node(
-        package='joy_teleop',
-        executable='joy_teleop',
-        parameters=[LaunchConfiguration('teleop_config')],
-        remappings=[('cmd_vel', LaunchConfiguration('cmd_vel'))])
+        package="joy_teleop",
+        executable="joy_teleop",
+        parameters=[LaunchConfiguration("teleop_config")],
+        remappings=[("cmd_vel", LaunchConfiguration("cmd_vel"))],
+    )
 
     joy_node = Node(
-        package='joy',
-        executable='joy_node',
-        name='joystick',
-        parameters=[os.path.join(pkg_dir, 'config', 'joy_teleop', 'joy_config.yaml')])
+        package="joy",
+        executable="joy_node",
+        name="joystick",
+        parameters=[os.path.join(pkg_dir, "config", "joy_teleop", "joy_config.yaml")],
+    )
 
     torso_incrementer_server = Node(
-        package='joy_teleop',
-        executable='incrementer_server',
-        name='incrementer',
-        namespace='torso_controller')
+        package="joy_teleop",
+        executable="incrementer_server",
+        name="incrementer",
+        namespace="torso_controller",
+    )
 
     head_incrementer_server = Node(
-        package='joy_teleop',
-        executable='incrementer_server',
-        name='incrementer',
-        namespace='head_controller')
+        package="joy_teleop",
+        executable="incrementer_server",
+        name="incrementer",
+        namespace="head_controller",
+    )
 
     gripper_incrementer_server = Node(
-        package='joy_teleop',
-        executable='incrementer_server',
-        name='incrementer',
-        namespace='gripper_controller')
+        package="joy_teleop",
+        executable="incrementer_server",
+        name="incrementer",
+        namespace="gripper_controller",
+    )
 
     ld = LaunchDescription()
 

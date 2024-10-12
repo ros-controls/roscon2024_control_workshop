@@ -16,4 +16,3 @@ time_to_wait_stopped: 3.0
 max_theoric_acceleration: 5.0
 # Maximum max_effort_value to normalize effort values
 max_effort_value: 5.0
-

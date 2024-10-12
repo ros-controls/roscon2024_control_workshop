@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
   Copyright (c) 2022 PAL Robotics S.L. All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@
   <xacro:if value="${camera_model not in ['no-camera', 'orbbec-astra', 'orbbec-astra-pro', 'asus-xtion']}">
     <xacro:wrong_camera_model/>
   </xacro:if>
-        <!-- The properties below are modified using empy http://www.alcyone.com/software/empy/
+        <!-- The properties below are modified using empty http://www.alcyone.com/software/empty/
              from the create_robot.py tool. Handle them with care -->
    <xacro:property name="has_schunk_ft"           value="${ft_sensor == 'schunk-ft'}"/>
    <xacro:property name="has_ft_sensor"           value="${has_arm and has_schunk_ft}"/> <!-- This should be OR'ed with other FT sensors-->
@@ -158,5 +158,3 @@
   </xacro:if>
 
 </robot>
-
-

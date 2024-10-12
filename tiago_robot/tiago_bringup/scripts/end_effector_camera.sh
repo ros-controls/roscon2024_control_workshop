@@ -16,7 +16,7 @@ for i in $(seq 0 `expr ${#list_vendor[@]} - 1`);
 do
     echo "searching ${list_vendor[i]}":"${list_product[i]}"
     if [[ $(lsusb | grep ${list_vendor[i]}":"${list_product[i]}) ]]; then
-        echo -e "\e[0;32mFound!\e[0m" 
+        echo -e "\e[0;32mFound!\e[0m"
         roslaunch tiago_bringup end_effector_camera.launch vendor:=${list_vendor[i]} product:=${list_product[i]} frame_rate:=${list_frame_rate[i]} camera:=${camera} index:=${index}
     fi
 done
@@ -38,7 +38,7 @@ case $1 in
     "left_camera")
         cameras_run $1 1
     ;;
-    # unccoment the following to add the posibility to add an extra camera
+    # unccoment the following to add the possibility to add an extra camera
     # "x_camera")
     #     confirmation "Have you plugged left usb endoscopic camera WITHOUT unplugging the right one?"
     #     cameras_run $1 2

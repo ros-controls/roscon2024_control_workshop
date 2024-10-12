@@ -20,22 +20,22 @@ from launch_pal.include_utils import include_launch_py_description
 
 
 def generate_launch_description():
-    pkg = get_package_share_directory('tiago_bringup')
+    pkg = get_package_share_directory("tiago_bringup")
 
-    config_locks_file = os.path.join(
-        pkg, 'config', 'twist_mux', 'twist_mux_locks.yaml')
-    config_topics_file = os.path.join(
-        pkg, 'config', 'twist_mux', 'twist_mux_topics.yaml')
-    joystick_file = os.path.join(pkg, 'config', 'twist_mux', 'joystick.yaml')
+    config_locks_file = os.path.join(pkg, "config", "twist_mux", "twist_mux_locks.yaml")
+    config_topics_file = os.path.join(pkg, "config", "twist_mux", "twist_mux_topics.yaml")
+    joystick_file = os.path.join(pkg, "config", "twist_mux", "joystick.yaml")
 
     twist_mux = include_launch_py_description(
-        'twist_mux', ['launch', 'twist_mux_launch.py'],
+        "twist_mux",
+        ["launch", "twist_mux_launch.py"],
         launch_arguments={
-            'cmd_vel_out': 'mobile_base_controller/cmd_vel_unstamped',
-            'config_locks': config_locks_file,
-            'config_topics': config_topics_file,
-            'config_joy': joystick_file,
-        }.items())
+            "cmd_vel_out": "mobile_base_controller/cmd_vel_unstamped",
+            "config_locks": config_locks_file,
+            "config_topics": config_topics_file,
+            "config_joy": joystick_file,
+        }.items(),
+    )
 
     ld = LaunchDescription()
     ld.add_action(twist_mux)

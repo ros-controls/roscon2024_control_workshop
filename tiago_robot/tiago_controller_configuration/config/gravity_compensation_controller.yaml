@@ -19,6 +19,3 @@ gravity_compensation_controller:
     velocity_tolerances: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     torque_gain: 1.0
-
-
-

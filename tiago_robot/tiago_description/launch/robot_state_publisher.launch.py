@@ -48,14 +48,25 @@ from launch_ros.substitutions import FindPackageShare
 def launch_setup(context, *args, **kwargs):
 
     # tiago_unrolled_urdf = 'tiago_base_unrolled.urdf'
-    tiago_unrolled_urdf = 'tiago_full_unrolled.urdf'
+    tiago_unrolled_urdf = "tiago_full_unrolled.urdf"
 
-    parameters = {'robot_description': Command(["cat ", PathJoinSubstitution([FindPackageShare('tiago_description'), "robots", tiago_unrolled_urdf])]).perform(context)}
+    parameters = {
+        "robot_description": Command(
+            [
+                "cat ",
+                PathJoinSubstitution(
+                    [FindPackageShare("tiago_description"), "robots", tiago_unrolled_urdf]
+                ),
+            ]
+        ).perform(context)
+    }
 
-    rsp = Node(package='robot_state_publisher',
-               executable='robot_state_publisher',
-               output='both',
-               parameters=[parameters])
+    rsp = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        output="both",
+        parameters=[parameters],
+    )
 
     return [rsp]
 

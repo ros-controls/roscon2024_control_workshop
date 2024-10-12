@@ -20,8 +20,11 @@ from controller_manager.launch_utils import generate_load_controller_launch_desc
 
 def generate_launch_description():
     return generate_load_controller_launch_description(
-        controller_name='gripper_controller',
-        controller_type='joint_trajectory_controller/JointTrajectoryController',
+        controller_name="gripper_controller",
+        controller_type="joint_trajectory_controller/JointTrajectoryController",
         controller_params_file=os.path.join(
-            get_package_share_directory('pal_gripper_controller_configuration'),
-            'config', 'gripper_controller.yaml'))
+            get_package_share_directory("pal_gripper_controller_configuration"),
+            "config",
+            "gripper_controller.yaml",
+        ),
+    )

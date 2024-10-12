@@ -22,16 +22,16 @@ from launch_pal.robot_utils import get_end_effector, get_robot_name
 
 def declare_end_effector(context, *args, **kwargs):
 
-    robot_name = read_launch_argument('robot_name', context)
+    robot_name = read_launch_argument("robot_name", context)
     return [get_end_effector(robot_name)]
 
 
 def launch_end_effector_controller(context, *args, **kwargs):
 
-    end_effector_launcher = read_launch_argument('end_effector_controller_launch', context)
+    end_effector_launcher = read_launch_argument("end_effector_controller_launch", context)
     end_effector_controller_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', end_effector_launcher])
+        "tiago_controller_configuration", ["launch", end_effector_launcher]
+    )
 
     return [end_effector_controller_launch]
 
@@ -39,33 +39,34 @@ def launch_end_effector_controller(context, *args, **kwargs):
 def generate_launch_description():
 
     end_effector_controller = DeclareLaunchArgument(
-        'end_effector_controller_launch',
-        default_value=[LaunchConfiguration('end_effector'), '_controller.launch.py'],
-        description='end effector controller launch file')
+        "end_effector_controller_launch",
+        default_value=[LaunchConfiguration("end_effector"), "_controller.launch.py"],
+        description="end effector controller launch file",
+    )
 
     mobile_base_controller_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'mobile_base_controller.launch.py'])
+        "tiago_controller_configuration", ["launch", "mobile_base_controller.launch.py"]
+    )
 
     joint_state_broadcaster_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'joint_state_broadcaster.launch.py'])
+        "tiago_controller_configuration", ["launch", "joint_state_broadcaster.launch.py"]
+    )
 
     torso_controller_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'torso_controller.launch.py'])
+        "tiago_controller_configuration", ["launch", "torso_controller.launch.py"]
+    )
 
     head_controller_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'head_controller.launch.py'])
+        "tiago_controller_configuration", ["launch", "head_controller.launch.py"]
+    )
 
     arm_controller_launch = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'arm_controller.launch.py'])
+        "tiago_controller_configuration", ["launch", "arm_controller.launch.py"]
+    )
 
     ld = LaunchDescription()
 
-    ld.add_action(get_robot_name('tiago'))
+    ld.add_action(get_robot_name("tiago"))
 
     ld.add_action(mobile_base_controller_launch)
     ld.add_action(joint_state_broadcaster_launch)

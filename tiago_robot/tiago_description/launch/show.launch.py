@@ -21,10 +21,10 @@ from launch_ros.substitutions import FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 
+
 def include_launch_py_description(
-        pkg_name: SomeSubstitutionsType,
-        paths: List[SomeSubstitutionsType],
-        **kwargs) -> Text:
+    pkg_name: SomeSubstitutionsType, paths: List[SomeSubstitutionsType], **kwargs
+) -> str:
     """
     Return IncludeLaunchDescription for the file inside pkg at paths.
 
@@ -37,28 +37,34 @@ def include_launch_py_description(
     pkg_dir = FindPackageShare(pkg_name)
     full_path = PathJoinSubstitution([pkg_dir] + paths)
 
-    return IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            full_path),
-        **kwargs)
+    return IncludeLaunchDescription(PythonLaunchDescriptionSource(full_path), **kwargs)
+
 
 def generate_launch_description():
 
     robot_state_publisher = include_launch_py_description(
-        'tiago_description', ['launch', 'robot_state_publisher.launch.py'])
+        "tiago_description", ["launch", "robot_state_publisher.launch.py"]
+    )
 
     start_joint_pub_gui = Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-        name='joint_state_publisher_gui',
-        output='screen')
+        package="joint_state_publisher_gui",
+        executable="joint_state_publisher_gui",
+        name="joint_state_publisher_gui",
+        output="screen",
+    )
 
     start_rviz_cmd = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', PathJoinSubstitution([FindPackageShare("tiago_description"), "config", "model_and_tf.rviz"])],
-        output='screen')
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=[
+            "-d",
+            PathJoinSubstitution(
+                [FindPackageShare("tiago_description"), "config", "model_and_tf.rviz"]
+            ),
+        ],
+        output="screen",
+    )
 
     ld = LaunchDescription()
 

@@ -18,18 +18,18 @@ from launch_pal.include_utils import include_launch_py_description
 
 def generate_launch_description():
     default_controllers = include_launch_py_description(
-        'tiago_controller_configuration',
-        ['launch', 'default_controllers.launch.py'])
+        "tiago_controller_configuration", ["launch", "default_controllers.launch.py"]
+    )
 
     play_motion2 = include_launch_py_description(
-        'tiago_bringup', ['launch', 'tiago_play_motion2.launch.py'])
+        "tiago_bringup", ["launch", "tiago_play_motion2.launch.py"]
+    )
 
-    twist_mux = include_launch_py_description(
-        'tiago_bringup', ['launch', 'twist_mux.launch.py'])
+    twist_mux = include_launch_py_description("tiago_bringup", ["launch", "twist_mux.launch.py"])
 
     tiago_state_publisher = include_launch_py_description(
-        'tiago_description',
-        ['launch', 'robot_state_publisher.launch.py'])
+        "tiago_description", ["launch", "robot_state_publisher.launch.py"]
+    )
 
     # @TODO: robot pose publisher
     # @TODO: tf lookup

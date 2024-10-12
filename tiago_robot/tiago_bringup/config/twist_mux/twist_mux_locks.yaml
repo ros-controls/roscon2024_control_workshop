@@ -1,6 +1,6 @@
 # Locks to stop the twist mux.
 # For each lock:
-# - topic   : input topic that provides the lock; it must be of type std_msgs::Bool?!!! 
+# - topic   : input topic that provides the lock; it must be of type std_msgs::Bool?!!!
 # - timeout : == 0.0 -> not used
 #              > 0.0 -> the lock is supposed to published at a certain frequency in order
 #                       to detect that the publisher is alive; the timeout in seconds allows
@@ -20,8 +20,7 @@ twist_mux:
         topic   : stop_closing_loop
         timeout : 0.0
         priority: 200
-      joystick: 
+      joystick:
         topic   : joy_priority
         timeout : 0.0
         priority: 100
-

@@ -78,4 +78,3 @@ velocity:
   gains:
      wheel_right_joint: {p: 30,  d: 0, i: 0, i_clamp: 1.}
      wheel_left_joint: {p: 30,  d: 0, i: 0, i_clamp: 1.0}
-
