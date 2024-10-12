@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from pathlib import Path
+# import os
+# from pathlib import Path
 
-from ament_index_python.packages import get_package_share_directory
+# from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import OpaqueFunction
@@ -28,9 +28,11 @@ from launch.actions import OpaqueFunction
 #                                     get_laser_model,
 #                                     get_robot_name,
 #                                     get_wrist_model)
-from launch_param_builder import load_xacro
+# from launch_param_builder import load_xacro
 from launch_ros.actions import Node
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+
+# from launch.substitutions import FindExecutable
+from launch.substitutions import Command, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
 # def declare_args(context, *args, **kwargs):

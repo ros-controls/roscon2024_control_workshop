@@ -13,8 +13,9 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+
+# from launch.actions import DeclareLaunchArgument, OpaqueFunction
+# from launch.substitutions import LaunchConfiguration
 from launch_pal.arg_utils import read_launch_argument
 from launch_pal.include_utils import include_launch_py_description
 from launch_pal.robot_utils import get_end_effector, get_robot_name
@@ -38,11 +39,11 @@ def launch_end_effector_controller(context, *args, **kwargs):
 
 def generate_launch_description():
 
-    end_effector_controller = DeclareLaunchArgument(
-        "end_effector_controller_launch",
-        default_value=[LaunchConfiguration("end_effector"), "_controller.launch.py"],
-        description="end effector controller launch file",
-    )
+    # end_effector_controller = DeclareLaunchArgument(
+    #     "end_effector_controller_launch",
+    #     default_value=[LaunchConfiguration("end_effector"), "_controller.launch.py"],
+    #     description="end effector controller launch file",
+    # )
 
     mobile_base_controller_launch = include_launch_py_description(
         "tiago_controller_configuration", ["launch", "mobile_base_controller.launch.py"]
@@ -52,17 +53,17 @@ def generate_launch_description():
         "tiago_controller_configuration", ["launch", "joint_state_broadcaster.launch.py"]
     )
 
-    torso_controller_launch = include_launch_py_description(
-        "tiago_controller_configuration", ["launch", "torso_controller.launch.py"]
-    )
+    # torso_controller_launch = include_launch_py_description(
+    #     "tiago_controller_configuration", ["launch", "torso_controller.launch.py"]
+    # )
 
-    head_controller_launch = include_launch_py_description(
-        "tiago_controller_configuration", ["launch", "head_controller.launch.py"]
-    )
+    # head_controller_launch = include_launch_py_description(
+    #     "tiago_controller_configuration", ["launch", "head_controller.launch.py"]
+    # )
 
-    arm_controller_launch = include_launch_py_description(
-        "tiago_controller_configuration", ["launch", "arm_controller.launch.py"]
-    )
+    # arm_controller_launch = include_launch_py_description(
+    #     "tiago_controller_configuration", ["launch", "arm_controller.launch.py"]
+    # )
 
     ld = LaunchDescription()
 

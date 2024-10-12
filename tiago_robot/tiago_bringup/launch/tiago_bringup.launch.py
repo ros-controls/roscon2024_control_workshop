@@ -21,9 +21,9 @@ def generate_launch_description():
         "tiago_controller_configuration", ["launch", "default_controllers.launch.py"]
     )
 
-    play_motion2 = include_launch_py_description(
-        "tiago_bringup", ["launch", "tiago_play_motion2.launch.py"]
-    )
+    # play_motion2 = include_launch_py_description(
+    #     "tiago_bringup", ["launch", "tiago_play_motion2.launch.py"]
+    # )
 
     twist_mux = include_launch_py_description("tiago_bringup", ["launch", "twist_mux.launch.py"])
 

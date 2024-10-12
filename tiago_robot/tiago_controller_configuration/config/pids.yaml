@@ -22,7 +22,6 @@ gains:
   hand_index_flex_1_joint: *finger_gains
   hand_index_flex_2_joint: *finger_gains
   hand_index_flex_3_joint: *finger_gains
-  hand_index_joint: *finger_gains
   hand_little_abd_joint: *finger_gains
   hand_little_virtual_1_joint: *finger_gains
   hand_little_virtual_2_joint: *finger_gains
@@ -51,8 +50,6 @@ gains:
   hand_thumb_flex_1_joint: *finger_gains
   hand_thumb_flex_2_joint: *finger_gains
   hand_thumb_flex_3_joint: *finger_gains
-  hand_thumb_joint: *finger_gains
-  hand_mrl_joint: *finger_gains
 
   gripper_left_finger_joint: &gripper_finger_gains {p: 2000,  d: 0,  i: 0, p_gain: 2000}
   gripper_right_finger_joint: *gripper_finger_gains
