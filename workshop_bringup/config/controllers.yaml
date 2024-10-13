@@ -11,8 +11,9 @@ controller_manager:
     mobile_base_controller:
       type: diff_drive_controller/DiffDriveController
 
-    cmd_vel_relay:
-      type: twist_relay_controller/RelayController
+    faulty_arm_controller:
+      type: workshop_controllers/FaultyJTC
+
 
 head_controller:
   ros__parameters:
@@ -50,9 +51,35 @@ mobile_base_controller:
     # Publish wheel data
     publish_wheel_data: true
 
-cmd_vel_relay:
-  ros__parameters:
-    linear_velocity_cmd_if: "mobile_base_controller/angular/velocity"
-    angular_velocity_cmd_if: "mobile_base_controller/linear/velocity"
-    steering_angle_cmd_if: "head_controller/head_1_joint/position"
-    yaw_multiplier: 1.0
+faulty_arm_controller:
+  ros__parameters:   
+    # type: workshop_controllers/FaultyJTC
+    joints:
+      - arm_1_joint
+      - arm_2_joint
+      - arm_3_joint
+      - arm_4_joint
+      - arm_5_joint
+      - arm_6_joint
+      - arm_7_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    constraints:
+      goal_time: 0.6
+      stopped_velocity_tolerance: 5.0
+      arm_1_joint:
+        goal: 0.02
+      arm_2_joint:
+        goal: 0.02
+      arm_3_joint:
+        goal: 0.02
+      arm_4_joint:
+        goal: 0.02
+      arm_5_joint:
+        goal: 0.02
+      arm_6_joint:
+        goal: 0.02
+      arm_7_joint:
+        goal: 0.02
