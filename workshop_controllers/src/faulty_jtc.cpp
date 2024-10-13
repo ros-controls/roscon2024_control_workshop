@@ -63,6 +63,7 @@ controller_interface::return_type FaultyJTC::update(
 {
   if (should_fail_)
   {
+    should_fail_ = true;
     return controller_interface::return_type::ERROR;
   }
   return JointTrajectoryController::update(time, period);

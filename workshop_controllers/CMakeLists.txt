@@ -29,19 +29,19 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-add_library(faulty_jtc SHARED
+add_library(workshop_controllers SHARED
   src/faulty_jtc.cpp
 )
-target_compile_features(faulty_jtc PUBLIC cxx_std_17)
-target_include_directories(faulty_jtc PUBLIC
+target_compile_features(workshop_controllers PUBLIC cxx_std_17)
+target_include_directories(workshop_controllers PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/joint_trajectory_controller>
 )
-ament_target_dependencies(faulty_jtc PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
+ament_target_dependencies(workshop_controllers PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(faulty_jtc PRIVATE "JOINT_TRAJECTORY_CONTROLLER_BUILDING_DLL" "_USE_MATH_DEFINES")
+target_compile_definitions(workshop_controllers PRIVATE "JOINT_TRAJECTORY_CONTROLLER_BUILDING_DLL" "_USE_MATH_DEFINES")
 pluginlib_export_plugin_description_file(controller_interface controller_plugins.xml)
 
 
@@ -50,7 +50,7 @@ install(
   DESTINATION include/workshop_controllers
 )
 install(TARGETS
-    faulty_jtc
+    workshop_controllers
   EXPORT export_workshop_controllers
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
