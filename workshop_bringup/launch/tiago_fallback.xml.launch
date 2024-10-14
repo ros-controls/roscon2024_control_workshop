@@ -11,7 +11,7 @@
         <param name="robot_description" value="$(var robot_description)" />
         <param from="$(find-pkg-share workshop_bringup)/config/controllers.yaml" />
     </node>
- 
+
     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>
 
     <node pkg="controller_manager" exec="spawner" args="head_controller"/>

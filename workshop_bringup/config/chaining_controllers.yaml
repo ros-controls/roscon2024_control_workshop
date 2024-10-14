@@ -11,8 +11,11 @@ controller_manager:
     mobile_base_controller:
       type: diff_drive_controller/DiffDriveController
 
-    faulty_arm_controller:
-      type: workshop_controllers/FaultyJTC
+    range_broadcaster:
+      type: range_sensor_broadcaster/RangeSensorBroadcaster
+
+    range_filter:
+      type: workshop_controllers/Filter
 
 
 head_controller:
@@ -51,35 +54,21 @@ mobile_base_controller:
     # Publish wheel data
     publish_wheel_data: true
 
-faulty_arm_controller:
+
+range_broadcaster:
   ros__parameters:
-    # type: workshop_controllers/FaultyJTC
-    joints:
-      - arm_1_joint
-      - arm_2_joint
-      - arm_3_joint
-      - arm_4_joint
-      - arm_5_joint
-      - arm_6_joint
-      - arm_7_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-    constraints:
-      goal_time: 0.6
-      stopped_velocity_tolerance: 5.0
-      arm_1_joint:
-        goal: 0.02
-      arm_2_joint:
-        goal: 0.02
-      arm_3_joint:
-        goal: 0.02
-      arm_4_joint:
-        goal: 0.02
-      arm_5_joint:
-        goal: 0.02
-      arm_6_joint:
-        goal: 0.02
-      arm_7_joint:
-        goal: 0.02
+    # Setting mendatory parameters
+    sensor_name: "range_sensor"
+    frame_id: "range_sensor_frame"
+
+    # Setting parameters with changed default value to check those are used
+    radiation_type: 1
+    field_of_view: 0.1
+    min_range: 0.10
+    max_range: 7.0
+    variance: 1.0
+
+# range_filter:
+#   ros__parameters:
+#     input:
+#     output:

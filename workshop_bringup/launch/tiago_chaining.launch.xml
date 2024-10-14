@@ -9,16 +9,16 @@
 
     <node pkg="controller_manager" exec="ros2_control_node" output="both">
         <param name="robot_description" value="$(var robot_description)" />
-        <param from="$(find-pkg-share workshop_bringup)/config/controllers.yaml" />
+        <param from="$(find-pkg-share workshop_bringup)/config/chaining_controllers.yaml" />
     </node>
- 
+
     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>
 
     <node pkg="controller_manager" exec="spawner" args="head_controller"/>
 
     <node pkg="controller_manager" exec="spawner" args="mobile_base_controller"/>
 
-    <node pkg="controller_manager" exec="spawner" args="faulty_arm_controller"/>
+    <node pkg="controller_manager" exec="spawner" args="range_broadcaster"/>
 
 
 <!--     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>

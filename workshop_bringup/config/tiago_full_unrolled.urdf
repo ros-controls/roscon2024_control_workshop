@@ -297,6 +297,11 @@
 			<state_interface name="torque.y"/>
 			<state_interface name="torque.z"/>
 		</sensor>
+		<sensor name="range_sensor">
+ 			<state_interface name="range">
+				 <param name="initial_value">13.37</param>
+			</state_interface>
+		</sensor>
 	</ros2_control>
 	<material name="Blue">
 		<color rgba="0.0 0.0 0.8 1.0"/>
