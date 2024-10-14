@@ -12,14 +12,8 @@
         <param from="$(find-pkg-share workshop_bringup)/config/controllers.yaml" />
     </node>
 
-    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>
-
-    <node pkg="controller_manager" exec="spawner" args="head_controller"/>
-
-    <node pkg="controller_manager" exec="spawner" args="mobile_base_controller"/>
-
-    <node pkg="controller_manager" exec="spawner" args="faulty_arm_controller"/>
-
+    <node pkg="controller_manager" exec="spawner"
+          args="joint_state_broadcaster head_controller mobile_base_controller faulty_arm_controller"/>
 
 <!--     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>
     head_controller mobile_base_controller faulty_jtc -->
