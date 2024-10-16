@@ -67,6 +67,7 @@
 		<hardware>
 			<plugin>mock_components/GenericSystem</plugin>
 			<param name="calculate_dynamics">true</param>
+			<param name="add_noise_to_sensors">true</param>
 		</hardware>
 		<joint name="wheel_right_joint">
 			<command_interface name="velocity">
@@ -299,7 +300,7 @@
 		</sensor>
 		<sensor name="range_sensor">
  			<state_interface name="range">
-				 <param name="initial_value">13.37</param>
+				 <param name="initial_value">5.0</param>
 			</state_interface>
 		</sensor>
 	</ros2_control>
