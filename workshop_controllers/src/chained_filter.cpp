@@ -131,7 +131,7 @@ controller_interface::CallbackReturn ChainedFilter::on_activate(
 }
 
 controller_interface::return_type ChainedFilter::update_and_write_commands(
-  const rclcpp::Time & time, const rclcpp::Duration & period)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   // check for any parameter updates
   update_parameters();
