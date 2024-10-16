@@ -92,7 +92,8 @@ controller_interface::CallbackReturn ChainedFilter::on_configure(
   RCLCPP_INFO(this->get_node()->get_logger(), "configure successful");
 
   // The names should be in the same order as for command interfaces for easier matching
-  reference_interface_names_ = command_interface_names_;
+  reference_interface_names_ = {
+    std::string(get_node()->get_name()) + "/" + params_.output_interface};
   // for any case make reference interfaces size of command interfaces
   reference_interfaces_.resize(
     reference_interface_names_.size(), std::numeric_limits<double>::quiet_NaN());
