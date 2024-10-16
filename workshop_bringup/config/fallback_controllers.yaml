@@ -16,7 +16,7 @@ controller_manager:
 
     faulty_arm_controller:
       type: workshop_controllers/FaultyJTC
-
+      fallback_controllers: [arm_controller]
 
 head_controller:
   ros__parameters:
@@ -71,8 +71,6 @@ arm_controller:
 
 faulty_arm_controller:
   ros__parameters:
-    fallback_controllers:
-      - arm_controller
     joints:
       - arm_1_joint
       - arm_2_joint
