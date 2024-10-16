@@ -102,4 +102,3 @@ faulty_arm_controller:
         goal: 0.02
       arm_7_joint:
         goal: 0.02
-
