@@ -71,7 +71,7 @@ controller_interface::InterfaceConfiguration ChainedFilter::state_interface_conf
 {
   controller_interface::InterfaceConfiguration interfaces_config;
   interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-  interfaces_config.names = command_interface_names_;
+  interfaces_config.names = input_state_interfaces_;
 
   return interfaces_config;
 }
@@ -80,22 +80,20 @@ controller_interface::CallbackReturn ChainedFilter::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   params_ = param_listener_->get_params();
-  command_interface_names_ = {params_.input_interface};
+  input_state_interfaces_ = {params_.input_interface};
 
   joints_cmd_sub_ = this->get_node()->create_subscription<DataType>(
     "~/commands", rclcpp::SystemDefaultsQoS(),
     [this](const DataType::SharedPtr msg) { rt_buffer_ptr_.writeFromNonRT(msg); });
 
-  // pre-reserve command interfaces
-  command_interfaces_.reserve(command_interface_names_.size());
+  command_interfaces_.reserve(input_state_interfaces_.size());
 
   RCLCPP_INFO(this->get_node()->get_logger(), "configure successful");
 
-  // The names should be in the same order as for command interfaces for easier matching
-  reference_interface_names_ = {params_.output_interface};
+  output_state_interface_names_ = {params_.output_interface};
   // for any case make reference interfaces size of command interfaces
   reference_interfaces_.resize(
-    reference_interface_names_.size(), std::numeric_limits<double>::quiet_NaN());
+    output_state_interface_names_.size(), std::numeric_limits<double>::quiet_NaN());
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -110,12 +108,12 @@ controller_interface::CallbackReturn ChainedFilter::on_activate(
   //   ordered_interfaces;
   // if (
   //   !controller_interface::get_ordered_interfaces(
-  //     command_interfaces_, command_interface_names_, std::string(""), ordered_interfaces) ||
-  //   command_interface_names_.size() != ordered_interfaces.size())
+  //     command_interfaces_, input_state_interfaces_, std::string(""), ordered_interfaces) ||
+  //   input_state_interfaces_.size() != ordered_interfaces.size())
   // {
   //   RCLCPP_ERROR(
   //     this->get_node()->get_logger(), "Expected %zu command interfaces, got %zu",
-  //     command_interface_names_.size(), ordered_interfaces.size());
+  //     input_state_interfaces_.size(), ordered_interfaces.size());
   //   return controller_interface::CallbackReturn::ERROR;
   // }
 
@@ -144,12 +142,15 @@ bool ChainedFilter::on_set_chained_mode(bool /*chained_mode*/) { return true; }
 controller_interface::return_type ChainedFilter::update_and_write_commands(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  for (size_t i = 0; i < command_interfaces_.size(); ++i)
+  const auto sensor_value = state_interfaces_[0].get_value();
+  RCLCPP_INFO(get_node()->get_logger(), "Pre-filter value is %f", sensor_value);
+  RCLCPP_INFO(
+    get_node()->get_logger(), "Chained Filter is %s.",
+    (is_in_chained_mode() ? "chained" : "not chained"));
+
+  if (!std::isnan(sensor_value))
   {
-    if (!std::isnan(reference_interfaces_[i]))
-    {
-      command_interfaces_[i].set_value(reference_interfaces_[i]);
-    }
+    reference_interfaces_[0] = sensor_value;
   }
 
   return controller_interface::return_type::OK;
@@ -159,10 +160,10 @@ std::vector<hardware_interface::StateInterface> ChainedFilter::on_export_state_i
 {
   std::vector<hardware_interface::StateInterface> exported_interfaces;
 
-  for (size_t i = 0; i < reference_interface_names_.size(); ++i)
+  for (size_t i = 0; i < output_state_interface_names_.size(); ++i)
   {
     exported_interfaces.push_back(hardware_interface::StateInterface(
-      get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
+      get_node()->get_name(), output_state_interface_names_[i], &reference_interfaces_[i]));
   }
 
   return exported_interfaces;

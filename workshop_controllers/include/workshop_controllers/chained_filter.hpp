@@ -70,9 +70,9 @@ protected:
   realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>> rt_buffer_ptr_;
   rclcpp::Subscription<DataType>::SharedPtr joints_cmd_sub_;
 
-  std::vector<std::string> reference_interface_names_;
+  std::vector<std::string> output_state_interface_names_;
 
-  std::vector<std::string> command_interface_names_;
+  std::vector<std::string> input_state_interfaces_;
 };
 
 }  // namespace workshop_controllers
