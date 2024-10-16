@@ -14,8 +14,11 @@ controller_manager:
     range_broadcaster:
       type: range_sensor_broadcaster/RangeSensorBroadcaster
 
+    filtered_range_broadcaster:
+      type: range_sensor_broadcaster/RangeSensorBroadcaster
+
     range_filter:
-      type: workshop_controllers/Filter
+      type: workshop_controllers/ChainedFilter
 
 
 head_controller:
@@ -54,7 +57,6 @@ mobile_base_controller:
     # Publish wheel data
     publish_wheel_data: true
 
-
 range_broadcaster:
   ros__parameters:
     # Setting mendatory parameters
@@ -68,7 +70,22 @@ range_broadcaster:
     max_range: 7.0
     variance: 1.0
 
-# range_filter:
-#   ros__parameters:
-#     input:
-#     output:
+
+range_filter:
+  ros__parameters:
+    input_interface: "range_sensor/range"
+
+    output_interface: "range"
+
+    filter_chain:
+      filter1:
+        type: "filters/MedianFilterDouble"
+        name: "median_filter"
+        params:
+          number_of_observations: 5
+
+filtered_range_broadcaster:
+  ros__parameters:
+    # Setting mendatory parameters
+    sensor_name: "range_filter"
+    frame_id: "range_sensor_frame"

@@ -1,7 +1,13 @@
 <library path="workshop_controllers">
   <class name="workshop_controllers/FaultyJTC" type="workshop_controllers::FaultyJTC" base_class_type="controller_interface::ControllerInterface">
-  <description>
-    JTC with a fault injection service
-  </description>
+    <description>
+      JTC with a fault injection service
+    </description>
+  </class>
+
+  <class name="workshop_controllers/ChainedFilter" type="workshop_controllers::ChainedFilter" base_class_type="controller_interface::ChainableControllerInterface">
+    <description>
+      Single value filters setup
+    </description>
   </class>
 </library>

@@ -1,0 +1,19 @@
+chained_filter:
+  input_interface: {
+    type: string,
+    default_value: "A single, fully qualified interface name used for input, e.g. `joint1/position`",
+    description: "",
+    read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
+  }
+  output_interface: {
+    type: string,
+    default_value: "",
+    description: "Interface name of the output. Will be prefixed by the controller name, e.g. `position` will get you `controller_name/position`",
+    read_only: true,
+    validation: {
+      not_empty<>: null,
+    }
+  }

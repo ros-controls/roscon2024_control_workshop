@@ -16,7 +16,8 @@
 
     <node pkg="controller_manager" exec="spawner" args="range_broadcaster"/>
 
-<!--     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster"/>
-    head_controller mobile_base_controller faulty_jtc -->
+    <node pkg="controller_manager" exec="spawner" args="range_filter"/>
+
+    <node pkg="controller_manager" exec="spawner" args="filtered_range_broadcaster"/>
 
 </launch>
