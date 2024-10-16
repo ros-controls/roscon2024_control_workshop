@@ -46,154 +46,147 @@ static const rmw_qos_profile_t qos_services = {
 
 namespace workshop_controllers
 {
-ChainedFilter::ChainedFilter() : controller_interface::ChainableControllerInterface() {}
-
 controller_interface::CallbackReturn ChainedFilter::on_init()
 {
   try
   {
     param_listener_ = std::make_shared<chained_filter::ParamListener>(get_node());
-    filter_ = std::make_unique<filters::FilterChain<double>>("double");
+    params_ = param_listener_->get_params();
   }
   catch (const std::exception & e)
   {
-    fprintf(stderr, "Exception thrown during controller's init with message: %s \n", e.what());
+    fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
-
-  return controller_interface::CallbackReturn::SUCCESS;
-}
-
-controller_interface::CallbackReturn ChainedFilter::on_configure(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  auto ret = configure_parameters();
-  if (ret != CallbackReturn::SUCCESS)
-  {
-    return ret;
-  }
-
-  if (!filter_->configure(
-        "filter_chain", get_node()->get_node_logging_interface(),
-        get_node()->get_node_parameters_interface()))
-  {
-    RCLCPP_ERROR(
-      get_node()->get_logger(),
-      "Failed to configure filter chain."
-      "Check the parameters for filters setup.");
-    return CallbackReturn::FAILURE;
-  }
-
-  RCLCPP_INFO(get_node()->get_logger(), "configure successful");
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::InterfaceConfiguration ChainedFilter::command_interface_configuration() const
 {
-  controller_interface::InterfaceConfiguration command_interfaces_config;
-
-  command_interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-  command_interfaces_config.names = {params_.output_interface};
-
-  return command_interfaces_config;
+  return controller_interface::InterfaceConfiguration{
+    controller_interface::interface_configuration_type::NONE};
 }
 
 controller_interface::InterfaceConfiguration ChainedFilter::state_interface_configuration() const
 {
-  controller_interface::InterfaceConfiguration state_interfaces_config;
-  state_interfaces_config.type = controller_interface::interface_configuration_type::NONE;
-  return state_interfaces_config;
+  controller_interface::InterfaceConfiguration interfaces_config;
+  interfaces_config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
+  interfaces_config.names = command_interface_names_;
+
+  return interfaces_config;
 }
 
-std::vector<hardware_interface::CommandInterface> ChainedFilter::on_export_reference_interfaces()
+controller_interface::CallbackReturn ChainedFilter::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  reference_interfaces_.resize(dof_, std::numeric_limits<double>::quiet_NaN());
+  params_ = param_listener_->get_params();
+  command_interface_names_ = {params_.input_interface};
 
-  std::vector<hardware_interface::CommandInterface> reference_interfaces;
-  reference_interfaces.push_back(hardware_interface::CommandInterface(
-    get_node()->get_name(), params_.input_interface, &reference_interfaces_[0]));
+  joints_cmd_sub_ = this->get_node()->create_subscription<DataType>(
+    "~/commands", rclcpp::SystemDefaultsQoS(),
+    [this](const DataType::SharedPtr msg) { rt_buffer_ptr_.writeFromNonRT(msg); });
 
-  return reference_interfaces;
-}
+  // pre-reserve command interfaces
+  command_interfaces_.reserve(command_interface_names_.size());
 
-std::vector<hardware_interface::StateInterface> ChainedFilter::on_export_state_interfaces()
-{
-  state_interfaces_values_.resize(dof_, std::numeric_limits<double>::quiet_NaN());
+  RCLCPP_INFO(this->get_node()->get_logger(), "configure successful");
 
-  return {hardware_interface::StateInterface(
-    get_node()->get_name(), params_.output_interface, &state_interfaces_values_[0])};
+  // The names should be in the same order as for command interfaces for easier matching
+  reference_interface_names_ = command_interface_names_;
+  // for any case make reference interfaces size of command interfaces
+  reference_interfaces_.resize(
+    reference_interface_names_.size(), std::numeric_limits<double>::quiet_NaN());
+
+  return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn ChainedFilter::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  // //  check if we have all resources defined in the "points" parameter
+  // //  also verify that we *only* have the resources defined in the "points" parameter
+  // // ATTENTION(destogl): Shouldn't we use ordered interface all the time?
+  // std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
+  //   ordered_interfaces;
+  // if (
+  //   !controller_interface::get_ordered_interfaces(
+  //     command_interfaces_, command_interface_names_, std::string(""), ordered_interfaces) ||
+  //   command_interface_names_.size() != ordered_interfaces.size())
+  // {
+  //   RCLCPP_ERROR(
+  //     this->get_node()->get_logger(), "Expected %zu command interfaces, got %zu",
+  //     command_interface_names_.size(), ordered_interfaces.size());
+  //   return controller_interface::CallbackReturn::ERROR;
+  // }
+
+  // reset command buffer if a command came through callback when controller was inactive
+  rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
+
+  RCLCPP_INFO(this->get_node()->get_logger(), "activate successful");
+
+  std::fill(
+    reference_interfaces_.begin(), reference_interfaces_.end(),
+    std::numeric_limits<double>::quiet_NaN());
+
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::return_type ChainedFilter::update_and_write_commands(
-  const rclcpp::Time & time, const rclcpp::Duration & period)
+controller_interface::CallbackReturn ChainedFilter::on_deactivate(
+  const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  // check for any parameter updates
-  update_parameters();
+  // reset command buffer
+  rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
+  return controller_interface::CallbackReturn::SUCCESS;
+}
 
-  double filtered_value = reference_interfaces_[0];
+bool ChainedFilter::on_set_chained_mode(bool /*chained_mode*/) { return true; }
 
-  if (!std::isnan(reference_interfaces_[0]))
+controller_interface::return_type ChainedFilter::update_and_write_commands(
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+{
+  for (size_t i = 0; i < command_interfaces_.size(); ++i)
   {
-    filter_->update(reference_interfaces_[0], filtered_value);
+    if (!std::isnan(reference_interfaces_[i]))
+    {
+      command_interfaces_[i].set_value(reference_interfaces_[i]);
+    }
   }
-
-  RCLCPP_WARN(get_node()->get_logger(), "Filtered value is %f", filtered_value);
-
-  command_interfaces_[0].set_value(filtered_value);
 
   return controller_interface::return_type::OK;
 }
 
-bool ChainedFilter::on_set_chained_mode(bool /*chained_mode*/)
+std::vector<hardware_interface::StateInterface> ChainedFilter::on_export_state_interfaces()
 {
-  // Always accept switch to/from chained mode
-  return true;
+  std::vector<hardware_interface::StateInterface> exported_interfaces;
+
+  for (size_t i = 0; i < reference_interface_names_.size(); ++i)
+  {
+    exported_interfaces.push_back(hardware_interface::StateInterface(
+      get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
+  }
+
+  return exported_interfaces;
 }
 
 controller_interface::return_type ChainedFilter::update_reference_from_subscribers(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  // there's no non-chained mode here
+  auto joint_commands = rt_buffer_ptr_.readFromRT();
+  // message is valid
+  if (!(!joint_commands || !(*joint_commands)))
+  {
+    reference_interfaces_ = {(*joint_commands)->data};
+  }
+
   return controller_interface::return_type::OK;
 }
 
-void ChainedFilter::update_parameters()
-{
-  if (!param_listener_->is_old(params_))
-  {
-    return;
-  }
-  params_ = param_listener_->get_params();
-}
-
-controller_interface::CallbackReturn ChainedFilter::configure_parameters()
-{
-  update_parameters();
-
-  if (params_.input_interface.empty() || params_.output_interface.empty())
-  {
-    RCLCPP_FATAL(
-      get_node()->get_logger(), "Both input_interface and output_interface should be defined!");
-    return CallbackReturn::FAILURE;
-  }
-
-  dof_ = 1;
-
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp::NodeOptions ChainedFilter::define_custom_node_options() const
-{
-  return rclcpp::NodeOptions()
-    .allow_undeclared_parameters(true)
-    .automatically_declare_parameters_from_overrides(false);
-}
+// rclcpp::NodeOptions ChainedFilter::define_custom_node_options() const
+// {
+//   return rclcpp::NodeOptions()
+//     .allow_undeclared_parameters(true)
+//     .automatically_declare_parameters_from_overrides(false);
+// }
 
 }  // namespace workshop_controllers
 
