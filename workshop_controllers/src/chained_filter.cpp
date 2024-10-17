@@ -100,14 +100,6 @@ controller_interface::CallbackReturn ChainedFilter::on_activate(
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn ChainedFilter::on_deactivate(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  return controller_interface::CallbackReturn::SUCCESS;
-}
-
-bool ChainedFilter::on_set_chained_mode(bool /*chained_mode*/) { return true; }
-
 controller_interface::return_type ChainedFilter::update_and_write_commands(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
