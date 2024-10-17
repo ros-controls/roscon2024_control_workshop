@@ -59,9 +59,9 @@ mobile_base_controller:
 
 range_broadcaster:
   ros__parameters:
-    # Setting mendatory parameters
+    # Setting mandatory parameters
     sensor_name: "range_sensor"
-    frame_id: "range_sensor_frame"
+    frame_id: "base_sonar01_link"
 
     # Setting parameters with changed default value to check those are used
     radiation_type: 1
@@ -86,6 +86,6 @@ range_filter:
 
 filtered_range_broadcaster:
   ros__parameters:
-    # Setting mendatory parameters
+    # Setting mandatory parameters
     sensor_name: "range_filter"
-    frame_id: "range_sensor_frame"
+    frame_id: "base_sonar01_link"

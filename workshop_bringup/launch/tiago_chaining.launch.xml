@@ -12,8 +12,8 @@
         <param from="$(find-pkg-share workshop_bringup)/config/chaining_controllers.yaml" />
     </node>
 
-    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster head_controller mobile_base_controller range_broadcaster"/>
+    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster head_controller mobile_base_controller "/>
 
-    <node pkg="controller_manager" exec="spawner" args="--activate-as-group range_filter filtered_range_broadcaster "/>
+    <node pkg="controller_manager" exec="spawner" args="range_broadcaster range_filter filtered_range_broadcaster "/>
 
 </launch>
