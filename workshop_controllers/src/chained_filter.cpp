@@ -77,9 +77,6 @@ controller_interface::CallbackReturn ChainedFilter::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   params_ = param_listener_->get_params();
-  input_state_interfaces_ = {params_.input_interface};
-
-  output_state_interface_names_ = {params_.output_interface};
 
   if (!filter_->configure(
         "filter_chain", get_node()->get_node_logging_interface(),
@@ -126,15 +123,8 @@ controller_interface::return_type ChainedFilter::update_and_write_commands(
 
 std::vector<hardware_interface::StateInterface> ChainedFilter::on_export_state_interfaces()
 {
-  std::vector<hardware_interface::StateInterface> exported_interfaces;
-
-  for (size_t i = 0; i < output_state_interface_names_.size(); ++i)
-  {
-    exported_interfaces.push_back(hardware_interface::StateInterface(
-      get_node()->get_name(), output_state_interface_names_[i], &output_state_value_));
-  }
-
-  return exported_interfaces;
+  return {hardware_interface::StateInterface(
+    get_node()->get_name(), params_.output_interface, &output_state_value_)};
 }
 
 controller_interface::return_type ChainedFilter::update_reference_from_subscribers(

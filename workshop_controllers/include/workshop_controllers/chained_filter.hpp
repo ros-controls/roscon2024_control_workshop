@@ -66,10 +66,6 @@ protected:
   chained_filter::Params params_;
   std::unique_ptr<filters::FilterChain<double>> filter_;
 
-  std::vector<std::string> output_state_interface_names_;
-
-  std::vector<std::string> input_state_interfaces_;
-
   double output_state_value_;
 };
 
