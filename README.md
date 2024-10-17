@@ -75,7 +75,7 @@ Make sure to understand the configuration of the `fallback` controller in the [f
 
 3. Call service to provoke error of the `Faulty JTC`:
    ```
-   ros2 service call /faulty_arm_controller/set_fault example_interfaces/srv/SetBool data:\ true\
+   ros2 service call /faulty_arm_controller/set_fault example_interfaces/srv/SetBool "data: true"
    ```
 
 4. Now list the controllers in another terminal also where your workspace is sourced:
@@ -90,3 +90,45 @@ Make sure to understand the configuration of the `fallback` controller in the [f
 
 
 # Task 3: Async Controllers
+Often time we have in our setup a controller that might require more time for calculation than our update rate allows.
+Until know we had to optimize such controller or create a separate thread for complex calculation within it.
+Now ros2_control can take are of it by using *async* controllers where you can with simple parameter set your controller to run in a separate thread and all the thread-safe data exchange is taken care for you!
+
+#### Scenario
+In this task we are running the controllers as usual for Tiago robot.
+But we have also added a new sleepy controller that breaks update loop performance, by sleeping for random time.
+Using this controller as *sync* has influence on all other controller, therefore we should make it *async* to separate its "calculations" from the rest of the system.
+
+#### Running the example
+
+1. In a terminal where your workspace is sourced start launch file:
+   ```
+   ros2 launch workshop_bringup task3_async.launch.xml
+   ```
+
+1. Now list the controllers in another terminal also where your workspace is sourced:
+   ```
+   ros2 control list_controllers
+   ```
+
+1. Echo `JointStateBroadcaster`'s `joint_states` messages to check the update frequency:
+   ```
+   ros2 topic hz /joint_states
+   ```
+
+1. Set the `SleepyController` to the *SLOW* mode:
+   ```
+   ros2 service call /sleepy_controller/set_slow_control_mode example_interfaces/srv/SetBool "data: true"
+   ```
+
+4. Now check the frequency again (make sense to restart the node):
+   ```
+   ros2 topic hz /joint_states
+   ```
+
+5. Now make the controller *Async* by adding a parameter `is_async: true` under its namespace.
+
+6. Restart the scenario:
+   ```
+   ros2 launch workshop_bringup async_controllers.launch.xml
+   ```
