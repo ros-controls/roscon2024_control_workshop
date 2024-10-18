@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
 
+    <arg name="namespace" default=""/>
+    <arg name="config_file" default="chaining_controllers"/>
     <let name="robot_description" value="$(command 'xacro $(find-pkg-share workshop_bringup)/config/tiago_full_unrolled.urdf')" />
 
-    <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both">
+    <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both" namespace="$(var namespace)">
         <param name="robot_description" value="$(var robot_description)" />
     </node>
 
-    <node pkg="controller_manager" exec="ros2_control_node" output="both">
+    <node pkg="controller_manager" exec="ros2_control_node" output="both" namespace="$(var namespace)">
         <param name="robot_description" value="$(var robot_description)" />
-        <param from="$(find-pkg-share workshop_bringup)/config/chaining_controllers.yaml" />
+        <param from="$(find-pkg-share workshop_bringup)/config/$(var config_file).yaml" />
     </node>
 
-    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster head_controller mobile_base_controller "/>
+    <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster head_controller mobile_base_controller --activate-as-group" namespace="$(var namespace)"/>
 
-    <node pkg="controller_manager" exec="spawner" args="range_broadcaster range_filter filtered_range_broadcaster "/>
+    <node pkg="controller_manager" exec="spawner" args="range_broadcaster range_filter filtered_range_broadcaster " namespace="$(var namespace)"/>
 
 </launch>
