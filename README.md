@@ -90,3 +90,55 @@ Make sure to understand the configuration of the `fallback` controller in the [f
 
 
 # Task 3: Async Controllers
+
+
+# Task 4: Multi-robot scalable parameter handling
+
+This task demonstrates how to integrate multiple robots under different controller manager instances and how to handle parameters for better scalability of controller's configuration.
+
+#### Scenario
+Using PAL TIAGo robot we are going to repeat the same controller chaining as in deploying on a fleet of robots. The idea is to make the setup work on different robots working on different namespaced controller_manager. 
+
+#### What to focus on
+Make sure to understand the controller configuration present in the [chaining_controllers_tiago1.yaml](.workshop_bringup/config/chaining_controllers_tiago1.yaml) and [chaining_controllers_generic.yaml](.workshop_bringup/config/chaining_controllers_generic.yaml).
+
+
+#### Running the example
+
+1. In a terminal where your workspace is sourced start launch file:
+   ```
+   ros2 launch workshop_bringup tiago_chaining.launch.launch.xml namespace:=tiago1
+   ```
+
+   You should see that the different controllers are failing as the initial setup defined in the [chaining_controllers.yaml](.workshop_bringup/config/chaining_controllers.yaml) is not enough to work with the different controller managers setup
+
+2. In a terminal where your workspace is sourced start launch file:
+   ```
+   ros2 launch workshop_bringup tiago_chaining.launch.launch.xml namespace:=tiago1 config_file:=chaining_controllers_tiago1
+   ```
+
+   Now, launching the [chaining_controllers_tiago1.yaml](.workshop_bringup/config/chaining_controllers_tiago1.yaml) configuration file works because all the parameters are namespaced to the robot's serial number and it works. But!!!! you need to hardcode the namespacing in each and every robot's configuration file. If this works for you, then :thumbsup:. If not, the point 3 is for you!
+
+   ```
+   ros2 launch workshop_bringup tiago_chaining.launch.launch.xml namespace:=tiago2 config_file:=chaining_controllers_tiago1
+   ```
+
+   launching the above command should fail for you as it cannot find the corresponding parameters
+
+3. In a terminal where your workspace is sourced start launch file:
+   ```
+   ros2 launch workshop_bringup tiago_chaining.launch.launch.xml namespace:=tiago1 config_file:=chaining_controllers_generic
+   ```
+   ```
+   ros2 launch workshop_bringup tiago_chaining.launch.launch.xml namespace:=tiago2 config_file:=chaining_controllers_generic
+   ```
+
+4. Now list the controllers in another terminal also where your workspace is sourced:
+   ```
+   ros2 control list_controllers --controller-manager /tiago1/controller_manager
+   ros2 control list_controllers --controller-manager /tiago2/controller_manager
+   ```
+
+   You should see the same set of the controllers loaded in both the controller managers
+
+   [chaining_controllers_generic.yaml](.workshop_bringup/config/chaining_controllers_generic.yaml) has the controller's parameters set with the wildcard entries and this makes it scalable when deploying on a fleet of robots
