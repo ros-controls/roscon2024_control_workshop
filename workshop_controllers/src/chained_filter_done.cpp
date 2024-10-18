@@ -37,29 +37,15 @@ controller_interface::CallbackReturn ChainedFilter::on_init()
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-// FOR REFERENCE
-// enum class interface_configuration_type : std::uint8_t
-// {
-//   ALL = 0,
-//   INDIVIDUAL = 1,
-//   NONE = 2,
-// };
-// struct InterfaceConfiguration
-// {
-//   interface_configuration_type type;
-//   std::vector<std::string> names = {};
-// };
-
 controller_interface::InterfaceConfiguration ChainedFilter::command_interface_configuration() const
 {
-  // TODO fill this
-  return {};
+  return {controller_interface::interface_configuration_type::NONE};
 }
 
 controller_interface::InterfaceConfiguration ChainedFilter::state_interface_configuration() const
 {
-  // TODO fill this
-  return {};
+  return {
+    controller_interface::interface_configuration_type::INDIVIDUAL, {params_.input_interface}};
 }
 
 controller_interface::CallbackReturn ChainedFilter::on_configure(
@@ -84,37 +70,33 @@ controller_interface::CallbackReturn ChainedFilter::on_configure(
 controller_interface::CallbackReturn ChainedFilter::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  // TODO anything to do here?
+  output_state_value_ = std::numeric_limits<double>::quiet_NaN();
+
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::return_type ChainedFilter::update_and_write_commands(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  // TODO change this to get some proper input values
-  const auto sensor_value = 13.37;
-  double output = 0.0;
+  const auto sensor_value = state_interfaces_[0].get_value();
 
   if (!std::isnan(sensor_value))
   {
-    filter_->update(sensor_value, output);
+    filter_->update(sensor_value, output_state_value_);
   }
-
-  // TODO get "output" out of this controller somehow
 
   return controller_interface::return_type::OK;
 }
 
 std::vector<hardware_interface::StateInterface> ChainedFilter::on_export_state_interfaces()
 {
-  // TODO
-  return {};
+  return {hardware_interface::StateInterface(
+    get_node()->get_name(), params_.output_interface, &output_state_value_)};
 }
 
 controller_interface::return_type ChainedFilter::update_reference_from_subscribers(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  // TODO anything to do here?
   return controller_interface::return_type::OK;
 }
 
