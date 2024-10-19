@@ -3,6 +3,7 @@ services:
     image: roscon2024
     build:
       context: .
+      dockerfile: docker/Dockerfile
     network_mode: host
     init: true
     environment:
