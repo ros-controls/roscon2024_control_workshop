@@ -1,5 +1,5 @@
 <!--
-// Copyright (c) 2024, ros2_control Development Team
+Copyright (c) 2024, Stogl Robotics Consulting UG (haftungsbeschränkt)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,25 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+
+Source of this file are templates in
+[RosTeamWorkspace](https://github.com/StoglRobotics/ros_team_workspace) repository.
 -->
 
 <library path="workshop_controllers">
-  <class name="workshop_controllers/FaultyJTC" type="workshop_controllers::FaultyJTC" base_class_type="controller_interface::ControllerInterface">
-    <description>
-      JTC with a fault injection service
-    </description>
-  </class>
-
-  <class name="workshop_controllers/ChainedFilter" type="workshop_controllers::ChainedFilter" base_class_type="controller_interface::ChainableControllerInterface">
-    <description>
-      Single value filters setup.
-    </description>
-  </class>
-
   <class name="workshop_controllers/SleepyController"
          type="workshop_controllers::SleepyController" base_class_type="controller_interface::ChainableControllerInterface">
-    <description>
-      SleepyController ros2_control controller that breaks the update loop.
-    </description>
+  <description>
+    SleepyController ros2_control controller.
+  </description>
   </class>
 </library>

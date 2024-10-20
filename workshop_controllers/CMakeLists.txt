@@ -32,16 +32,23 @@ generate_parameter_library(chained_filter_parameters
   src/chained_filter.yaml
 )
 
+generate_parameter_library(sleepy_controller_parameters
+  src/sleepy_controller.yaml
+)
+
 add_library(workshop_controllers SHARED
-  src/faulty_jtc.cpp
   src/chained_filter.cpp
+  src/faulty_jtc.cpp
+  src/sleepy_controller.cpp
 )
 target_compile_features(workshop_controllers PUBLIC cxx_std_17)
 target_include_directories(workshop_controllers PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
 target_link_libraries(workshop_controllers PUBLIC
-  chained_filter_parameters)
+  chained_filter_parameters
+  sleepy_controller_parameters
+)
 ament_target_dependencies(workshop_controllers PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -55,8 +62,9 @@ install(
   DESTINATION include/workshop_controllers
 )
 install(TARGETS
-    workshop_controllers
     chained_filter_parameters
+    sleepy_controller_parameters
+    workshop_controllers
   EXPORT export_workshop_controllers
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
