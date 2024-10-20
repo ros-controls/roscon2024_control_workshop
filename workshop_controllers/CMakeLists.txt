@@ -37,7 +37,7 @@ generate_parameter_library(sleepy_controller_parameters
 )
 
 add_library(workshop_controllers SHARED
-  src/chained_filter.cpp
+  src/chained_filter_done.cpp
   src/faulty_jtc.cpp
   src/sleepy_controller.cpp
 )

@@ -11,12 +11,8 @@ controller_manager:
     mobile_base_controller:
       type: diff_drive_controller/DiffDriveController
 
-    arm_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
     faulty_arm_controller:
       type: workshop_controllers/FaultyJTC
-      fallback_controllers: [arm_controller]
 
 head_controller:
   ros__parameters:
@@ -54,20 +50,6 @@ mobile_base_controller:
     # Publish wheel data
     publish_wheel_data: true
 
-arm_controller:
-  ros__parameters:
-    joints:
-      - arm_1_joint
-      - arm_2_joint
-      - arm_3_joint
-      - arm_4_joint
-      - arm_5_joint
-      - arm_6_joint
-      - arm_7_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
 
 faulty_arm_controller:
   ros__parameters:
