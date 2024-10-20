@@ -8,7 +8,7 @@ services:
     init: true
     environment:
       # Wall off ROS. When this is FALSE, ROS_DOMAIN_ID is important to set
-      - ROS_AUTOMATIC_DISCOVERY_RANGE=localhost
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
       # Settings to make graphical programs work
       - DISPLAY
       - QT_X11_NO_MITSHM=1
