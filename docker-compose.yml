@@ -1,5 +1,5 @@
 services:
-  dev:
+  roscon2024:
     image: bmagyar/roscon2024_workshop
     build:
       context: .
