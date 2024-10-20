@@ -1,6 +1,6 @@
 services:
   dev:
-    image: roscon2024
+    image: bmagyar/roscon2024_workshop
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -8,13 +8,11 @@ services:
     init: true
     environment:
       # Wall off ROS. When this is FALSE, ROS_DOMAIN_ID is important to set
-      - ROS_LOCALHOST_ONLY=1
+      - ROS_AUTOMATIC_DISCOVERY_RANGE=localhost
       # Settings to make graphical programs work
       - DISPLAY
       - QT_X11_NO_MITSHM=1
     volumes:
-      # Workspace mount
-      - ../../../../ws:/home/ros/ws
       # Settings to make graphical programs work
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
