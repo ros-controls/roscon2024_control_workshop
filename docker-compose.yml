@@ -18,6 +18,5 @@ services:
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
       - /dev/dri:/dev/dri
     # this adds docker -it
-    working_dir: /home/ros/ws
     stdin_open: true # docker run -i
     tty: true        # docker run -t
