@@ -1,3 +1,5 @@
+Please provide us [feedback here](https://forms.gle/aKNb6QTJfPx52KLaA)
+
 # ROSCon 2024 ros2_control workshop
 
 ## Setup this repository
